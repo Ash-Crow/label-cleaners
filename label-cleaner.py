@@ -1,22 +1,6 @@
 # from SPARQLWrapper import SPARQLWrapper, JSON
 import argparse
-import requests
-
-# Constants 
-base_url = 'https://www.wikidata.org'
-api_url = base_url + '/w/api.php'
-
-
-def getWDinfo(qids):
-        payload = {
-            'action': 'wbgetentities',
-            'format': 'json',
-            'ids': '|'.join(qids),
-            'props': 'labels|aliases|descriptions|claims'
-        }
-        response = requests.get(api_url, params=payload)
-
-        print(response)
+import wikidata
 
 
 parser = argparse.ArgumentParser(
@@ -28,8 +12,14 @@ args = parser.parse_args()
 source = args.s
 prop = args.p
 
+qids = []
 f = open(source, 'r')
-qids = f.read()
+for l in f:
+    qid = l.strip()
+    if wikidata.is_qid(qid):
+        qids.append(qid)
+    else:
+        print('not a valid qid:' + qid)
 f.close()
 
 print(qids)
